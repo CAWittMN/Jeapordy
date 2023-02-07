@@ -25,12 +25,46 @@
  * Returns array of category ids
  */
 //MODEL
+class Model {
+  constructor() {
+    this.categories = [];
+  }
+  addCategories(catArray) {
+    for (cat of catArray) {
+      this.categories.push(cat);
+    }
+  }
+}
 //VIEW
+class View {
+  constructor() {
+    this.$gameTable = $("#game-table");
+    this.$catRow = $("#categories");
+    this.$qSection = $("#q-section");
+    this.$startResetBttn = $("#start-reset-bttn");
+    this.$spinContainer = $("#spin-container");
+    this.$newTR = $("<tr>");
+    this.$newQCell = $("<td>").addClass("clue").text("?");
+    this.$newCatCell = $("<th>").addClass("clue");
+    this.clearTable();
+  }
+  clearTable() {
+    this.$catRow.empty();
+    this.$qSection.empty();
+  }
+}
 //CONTROL
+class Control {
+  constructor(model, view) {
+    this.model = model;
+    this.view = view;
+  }
+}
 async function getCategoryIds() {
-  let response = await axios.get("jservice.io/api/categories", {
+  const randomID = Math.floor(Math.random() * 28163);
+  let response = await axios.get("https://jservice.io/api/category", {
     params: {
-      count: 6,
+      id: randomID,
     },
   });
 }
@@ -89,6 +123,7 @@ function hideLoadingView() {}
 async function setupAndStart() {}
 
 /** On click of start / restart button, set up game. */
+$("#start-reset-bttn").on("click", () => new Control(new Model(), new View()));
 
 // TODO
 
