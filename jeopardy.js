@@ -28,29 +28,44 @@
 class Model {
   constructor() {
     this.categories = [];
+    this.players = [];
+    this.numOfCat = 0;
+    this.score = 0;
+    this.currentClue = {};
+    this.currPlayer = 0;
   }
   addCategories(catArray) {
-    for (cat of catArray) {
-      this.categories.push(cat);
-    }
+    this.categories = catArray;
+    console.log(this.categories);
+  }
+  increaseScore(clueValue) {
+    this.score += clueValue;
+  }
+  updateCurrClue(clue) {
+    this.currentClue = clue;
   }
 }
 //VIEW
 class View {
   constructor() {
-    this.$gameTable = $("#game-table");
-    this.$catRow = $("#categories");
-    this.$qSection = $("#q-section");
+    this.$gameBoard = $("#game-board");
     this.$startResetBttn = $("#start-reset-bttn");
     this.$spinContainer = $("#spin-container");
-    this.$newTR = $("<tr>");
-    this.$newQCell = $("<td>").addClass("clue").text("?");
-    this.$newCatCell = $("<th>").addClass("clue");
-    this.clearTable();
+
+    this.$catContainer = $("<div>").addClass("catagories");
+    this.$catCell = $("<div>").addClass("category");
+    this.$clueContainerRow = $("<div>").addClass("clue-row");
+    this.$clueCell = $("<div>").addClass("clue").text("?");
+    this._clearTable();
   }
-  clearTable() {
-    this.$catRow.empty();
-    this.$qSection.empty();
+  boundInit(handler) {
+    this.$startResetBttn.on("click", (event) => {
+      handler();
+    });
+  }
+  makeGameBoard(handler) {}
+  _clearTable() {
+    this.$gameBoard.empty();
   }
 }
 //CONTROL
@@ -58,15 +73,26 @@ class Control {
   constructor(model, view) {
     this.model = model;
     this.view = view;
+
+    this.randomcat = this.getRandomCat();
+    this.view.boundInit(this.handleSetCategories);
+    //console.log(this.randomcat);
   }
-}
-async function getCategoryIds() {
-  const randomID = Math.floor(Math.random() * 28163);
-  let response = await axios.get("https://jservice.io/api/category", {
-    params: {
-      id: randomID,
-    },
-  });
+  handleSetCategories = () => {
+    const categories = this.getRandomCat();
+    this.model.addCategories(categories);
+    console.log(categories);
+  };
+
+  async getRandomCat() {
+    const randomID = Math.floor(Math.random() * 28163);
+    let response = await axios.get("https://jservice.io/api/category", {
+      params: {
+        id: randomID,
+      },
+    });
+    return response.data;
+  }
 }
 
 /** Return object with data about a category:
