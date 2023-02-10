@@ -34,8 +34,8 @@ class Model {
     this.score = 0;
     this.currentClue = {};
   }
-  addCategories(catArray) {
-    this.categories = catArray;
+  addCategory(category) {
+    this.categories = category;
   }
   increaseScore(clueValue) {
     this.score += clueValue;
@@ -53,7 +53,9 @@ class View {
     this._clearTable();
   }
   makeGameBoard(cats) {
-    for (let cat of cats) {
+    console.log(cats);
+    for (const cat of cats) {
+      console.log(cat);
       this._makeCatColumn(cat);
     }
   }
@@ -61,6 +63,7 @@ class View {
   _makeCatColumn(cat) {
     console.log(cat);
     const clueArr = cat.clues;
+    console.log(cat.clues);
     let clueIndex = 0;
 
     const $newCatColumm = $("<div>").addClass("catagory-container");
@@ -88,15 +91,19 @@ class Control {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.handleInit();
+    this.InitData();
 
     //console.log(this.randomcat);
   }
-  handleInit() {
-    this.model.addCategories(
-      _.times(this.model.numOfCategories, () => this._getRandomCat())
-    );
-    this.view.makeGameBoard(this.model.categories);
+  InitData() {
+    const categories = [];
+    _.times(this.model.numOfCategories, () => {
+      const category = this._getRandomCat();
+      categories.push(category);
+      console.log(categories);
+    });
+    this.model.addCategory(categories);
+    console.log(this.model.categories, this.model.categories[0]);
   }
   async _getRandomCat() {
     const randomID = Math.floor(Math.random() * 28163);
@@ -105,8 +112,13 @@ class Control {
         id: randomID,
       },
     });
+    console.log(response.data.clues);
     return response.data;
   }
+  initGame() {
+    this.view.makeGameBoard(this.model.categories);
+  }
 }
+const newGame = new Control(new Model(), new View());
 
-$("#start-reset-bttn").on("click", () => new Control(new Model(), new View()));
+$("#start-reset-bttn").on("click", () => newGame.initGame());
