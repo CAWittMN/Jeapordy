@@ -34,8 +34,8 @@ class Model {
     this.score = 0;
     this.currentClue = {};
   }
-  addCategory(category) {
-    this.categories = category;
+  addCategories(categoriesArr) {
+    this.categories = categoriesArr;
   }
   increaseScore(clueValue) {
     this.score += clueValue;
@@ -73,7 +73,7 @@ class View {
     _.times(5, () => {
       const $newClueCell = $("<div>")
         .addClass("clue")
-        .text(/*clueArr[clueIndex].value*/ "test")
+        .text(clueArr[clueIndex].value)
         .attr("id", clueArr[clueIndex].id);
       $newCatColumm.append($newClueCell);
       clueIndex += 1;
@@ -91,19 +91,25 @@ class Control {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.InitData();
+    this.getData();
 
     //console.log(this.randomcat);
   }
-  InitData() {
-    const categories = [];
-    _.times(this.model.numOfCategories, () => {
-      const category = this._getRandomCat();
-      categories.push(category);
-      console.log(categories);
+  async getData() {
+    let categories = [];
+    const arrOfPromises = Array.from(
+      { length: this.model.numOfCategories },
+      (v, i) => i
+    ).map(async () => {
+      const category = await this._getRandomCat();
+      console.log(category);
+      return category;
     });
-    this.model.addCategory(categories);
-    console.log(this.model.categories, this.model.categories[0]);
+    const results = await Promise.all(arrOfPromises);
+    console.log({ results });
+    categories = results;
+    console.log(categories);
+    this.model.addCategories(categories);
   }
   async _getRandomCat() {
     const randomID = Math.floor(Math.random() * 28163);
@@ -115,10 +121,10 @@ class Control {
     console.log(response.data.clues);
     return response.data;
   }
-  initGame() {
+  renderView() {
     this.view.makeGameBoard(this.model.categories);
   }
 }
 const newGame = new Control(new Model(), new View());
 
-$("#start-reset-bttn").on("click", () => newGame.initGame());
+$("#start-reset-bttn").on("click", () => newGame.renderView());
