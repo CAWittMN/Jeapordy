@@ -21,12 +21,8 @@ class Model {
     this.currentClue = clue;
   }
 
-  checkClueValues() {
-    for (let cat of this.categories) {
-      const clues = cat.clues;
-      for (clue of clues) {
-      }
-    }
+  checkClueCount(recievedCat) {
+    return recievedCat.clues_count < 5;
   }
 }
 //VIEW
@@ -35,7 +31,6 @@ class View {
     this.$gameBoard = $("#game-board");
     this.$startResetBttn = $("#start-reset-bttn");
     this.$spinContainer = $("#spin-container");
-    this._clearTable();
   }
   makeGameBoard(cats) {
     console.log(cats);
@@ -47,6 +42,7 @@ class View {
   _makeCatColumn(cat) {
     const clueArr = cat.clues;
     let clueIndex = 0;
+    let value = 200;
 
     const $newCatColumm = $("<div>").addClass("catagory-container");
     const $newCatCell = $("<div>").addClass("category-cell").text(cat.title);
@@ -55,10 +51,12 @@ class View {
     _.times(5, () => {
       const $newClueCell = $("<div>")
         .addClass("clue")
-        .text(clueArr[clueIndex].value)
-        .attr("id", clueArr[clueIndex].id);
+        .text(value)
+        .attr("id", clueArr[clueIndex].id)
+        .attr("data-points", value);
       $newCatColumm.append($newClueCell);
       clueIndex += 1;
+      value += 200;
     });
 
     this.$gameBoard.append($newCatColumm);
@@ -68,7 +66,7 @@ class View {
     this.$spinContainer.toggle();
   }
 
-  _clearTable() {
+  clearTable() {
     this.$gameBoard.empty();
   }
 }
@@ -77,13 +75,15 @@ class Control {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.initGame();
+    this.view.$startResetBttn.on("click", () => this.initGame());
+    this.view.$gameBoard.on("click", () => this.handleClick(event));
   }
   async initGame() {
+    this.view.clearTable();
     this.view.toggleSpinner();
     await this.getData();
     this.view.toggleSpinner();
-    this.renderView();
+    this.view.makeGameBoard(this.model.categories);
   }
   async getData() {
     let categories = [];
@@ -91,8 +91,11 @@ class Control {
       { length: this.model.numOfCategories },
       (v, i) => i
     ).map(async () => {
-      const category = await this._getRandomCat();
-      console.log(category);
+      let category = await this._getRandomCat();
+      console.log(this.model.checkClueCount(category));
+      while (category.clues.length < 5) {
+        category = await this._getRandomCat();
+      }
       return category;
     });
     const results = await Promise.all(arrOfPromises);
@@ -116,10 +119,9 @@ class Control {
     return response.data;
     //}
   }
-
-  renderView() {
-    this.view.makeGameBoard(this.model.categories);
+  handleClick(event) {
+    console.log(event.target);
   }
 }
 
-$("#start-reset-bttn").on("click", () => new Control(new Model(), new View()));
+new Control(new Model(), new View());
