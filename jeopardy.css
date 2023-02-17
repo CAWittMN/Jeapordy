@@ -5,3 +5,52 @@
   #8d2ab5
   #74119c
 */
+
+#clue-text {
+  text-transform: capitalize;
+}
+
+.category-cell {
+  text-align: center;
+  text-transform: capitalize;
+  border: 2px solid orange;
+}
+
+.game-board {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+  align-items: center;
+  border: 2px solid green;
+}
+
+.clue {
+  border: 2px solid blue;
+  text-align: center;
+}
+
+.category-container {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid black;
+  justify-content: center;
+  align-items: center;
+}
+body {
+  display: flex;
+  flex-direction: column;
+  max-width: 1300px;
+  align-self: center;
+  text-align: center;
+}
+header {
+  text-align: center;
+}
+
+#spin-container {
+}
+
+html {
+  background-color: rgb(26, 30, 30);
+  color: white;
+}
