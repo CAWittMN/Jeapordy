@@ -3,7 +3,7 @@
 class Model {
   constructor() {
     this.categories = [];
-    this.numOfCategories = 6;
+    this.numOfCategories = 5;
     this.score = 0;
     this.currentClue = {};
   }
@@ -66,11 +66,14 @@ class View {
 
     _.times(5, () => {
       const workingClue = clueArr[clueIndex];
-      const $newClueCell = $("<div>").addClass("clue").text(value).attr({
-        id: workingClue.id,
-        "data-points": value,
-        "data-cat-id": workingClue.category_id,
-      });
+      const $newClueCell = $("<div>")
+        .addClass("clue")
+        .text("$" + value)
+        .attr({
+          id: workingClue.id,
+          "data-points": value,
+          "data-cat-id": workingClue.category_id,
+        });
       $newCatColumm.append($newClueCell);
       clueIndex += 1;
       value += 200;
@@ -90,9 +93,11 @@ class View {
   clearTable() {
     this.$gameBoard.empty();
   }
-  initClueWindow(clueText) {
-    this.toggleClueWindow();
-    this.$clueText.text(clueText);
+  initClueWindow(clueText, clueId) {
+    const $selectedClue = $(`#${clueId}`);
+    //this.toggleClueWindow();
+    //this.$clueText.text(clueText);
+    $selectedClue.addClass("grow").text(clueText);
   }
   updateScore(score) {
     this.$score.text("");
@@ -149,7 +154,10 @@ class Control {
   _handleClueClick(event) {
     if (event.target.classList.contains("clue")) {
       this.model.updateCurrClue(event);
-      this.view.initClueWindow(this.model.currentClue.question);
+      this.view.initClueWindow(
+        this.model.currentClue.question,
+        this.model.currentClue.id
+      );
     }
   }
   _handleAnswerCheck() {
@@ -161,7 +169,7 @@ class Control {
     this.model.increaseScore(this.model.currentClue.value);
     this.view.updateScore(this.model.score);
   }
-  _handleCorrectAnswer() {
+  _handleIncorrectAnswer() {
     console.log(this.model.currentClue.answer);
   }
 }

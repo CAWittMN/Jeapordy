@@ -11,46 +11,75 @@
 }
 
 .category-cell {
-  text-align: center;
   text-transform: capitalize;
-  border: 2px solid orange;
+  background-color: #060ce9;
+  width: 200px;
+  height: 60px;
+  font-size: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
 }
 
 .game-board {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
-  border: 2px solid green;
+  margin-top: 30px;
 }
 
 .clue {
-  border: 2px solid blue;
-  text-align: center;
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  background-color: #060ce9;
+  font-size: 3.5em;
+  width: 200px;
+  height: 110px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 5px 0px;
+  color: orange;
+  text-shadow: 6px 4px black;
+  transition: color ease-in-out 1s;
 }
 
 .category-container {
   display: flex;
   flex-direction: column;
-  border: 2px solid black;
   justify-content: center;
   align-items: center;
+  margin: 0 6px;
 }
 body {
   display: flex;
   flex-direction: column;
   max-width: 1300px;
-  align-self: center;
   text-align: center;
+  margin: auto;
 }
 header {
   text-align: center;
 }
 
 #spin-container {
+  text-align: center;
+  transform: scale(10);
+  margin-top: 25%;
+  transition: all ease-in 100ms;
 }
 
 html {
-  background-color: rgb(26, 30, 30);
+  background-color: #212351;
+  color: white;
+}
+.grow {
+  transform: scale(4);
+  margin: auto;
+  font-size: 0.5em;
+  box-shadow: 10px 10px rgb(0, 0, 0, 50%);
+  text-shadow: none;
   color: white;
 }
