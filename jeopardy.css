@@ -38,6 +38,7 @@
   width: 200px;
   height: 110px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   margin: 5px 0px;
@@ -77,9 +78,9 @@ html {
 }
 .grow {
   transform: scale(4);
-  margin: auto;
   font-size: 0.5em;
   box-shadow: 10px 10px rgb(0, 0, 0, 50%);
   text-shadow: none;
   color: white;
+  transition: all ease-in 1s;
 }

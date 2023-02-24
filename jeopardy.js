@@ -94,14 +94,31 @@ class View {
     this.$gameBoard.empty();
   }
   initClueWindow(clueText, clueId) {
+    const $answerInput = $("<input>").prop("required", true).attr({
+      id: "player-answer",
+      class: "answer-input",
+      placeholder: "What is...",
+      type: "text",
+    });
+    const $submitAnswerBttn = $("<button>")
+      .attr({
+        id: "submit-answer",
+        class: "submit-answer-bttn",
+      })
+      .text("Check answer!");
     const $selectedClue = $(`#${clueId}`);
-    //this.toggleClueWindow();
-    //this.$clueText.text(clueText);
-    $selectedClue.addClass("grow").text(clueText);
+    $selectedClue.addClass("grow");
+    setTimeout(() => {
+      $selectedClue.text(clueText);
+      $selectedClue.append($answerInput, $submitAnswerBttn);
+    }, 1000);
   }
   updateScore(score) {
     this.$score.text("");
-    this.$score.text(score);
+    this.$score.text(`${score}`);
+  }
+  getAnswerValue() {
+    return $("#player-answer").val();
   }
 }
 
@@ -158,16 +175,20 @@ class Control {
         this.model.currentClue.question,
         this.model.currentClue.id
       );
+      $("#submit-answer").on("click", () => this._handleAnswerCheck());
     }
   }
   _handleAnswerCheck() {
-    this.model.checkAnswer(this.view.$answerInput.val())
+    this.model.checkAnswer(this.view.getAnswerValue)
       ? this._handleCorrectAnswer()
       : this._handleIncorrectAnswer();
   }
   _handleCorrectAnswer() {
+    console.log(this.model.currentClue.value);
+    console.log(this.model.score);
     this.model.increaseScore(this.model.currentClue.value);
     this.view.updateScore(this.model.score);
+    console.log(this.model.score);
   }
   _handleIncorrectAnswer() {
     console.log(this.model.currentClue.answer);
