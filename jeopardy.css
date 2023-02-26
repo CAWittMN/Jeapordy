@@ -1,11 +1,3 @@
-/* some colors you may find useful:
-  #115ff4
-  #060ce9
-  #28a200
-  #8d2ab5
-  #74119c
-*/
-
 #clue-text {
   text-transform: capitalize;
 }
@@ -54,6 +46,7 @@
   align-items: center;
   margin: 0 6px;
 }
+
 body {
   display: flex;
   flex-direction: column;
@@ -61,6 +54,7 @@ body {
   text-align: center;
   margin: auto;
 }
+
 header {
   text-align: center;
 }
@@ -77,6 +71,7 @@ html {
   color: white;
   user-select: none;
 }
+
 .grow {
   position: fixed;
   top: 50%;
@@ -90,6 +85,7 @@ html {
   color: white;
   transition: all ease-in 1s;
 }
+
 #clue-window {
   color: white;
   display: flex;
@@ -104,6 +100,7 @@ html {
   border: solid black 2px;
   transition: all ease-in 1s;
 }
+
 .clue-box {
   margin: auto;
   display: flex;
@@ -111,6 +108,7 @@ html {
   justify-content: center;
   align-items: center;
 }
+
 .clicked {
   pointer-events: none;
 }
@@ -125,12 +123,15 @@ html {
   margin-top: 7px;
   background-color: rgb(255, 255, 255);
 }
+
 #player-answer:focus {
   outline: none;
 }
+
 #player-answer:focus::placeholder {
   color: transparent;
 }
+
 #submit-answer {
   text-align: center;
   cursor: pointer;
@@ -140,6 +141,33 @@ html {
   border: solid #212351 2px;
   background-color: orange;
 }
+
 #submit-answer:hover {
   background-color: rgb(255, 184, 53);
+}
+
+#score {
+  color: gold;
+}
+
+#start-reset-bttn {
+  cursor: pointer;
+  border-radius: 10px;
+  height: 30px;
+  width: 100px;
+  margin-bottom: 30px;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#score-box {
+  border: dotted orange 2px;
+  padding: 5px;
+  border-radius: 6px;
+  font-size: 20px;
 }

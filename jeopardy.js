@@ -24,6 +24,7 @@ class Model {
     );
     const currCat = this.categories.find((cat) => cat.id == clickedCatID);
     const currClue = currCat.clues.find((clue) => clue.id == clickedClueID);
+
     this.currentClue = currClue;
     this.currentClue.value = clickedCluePoints;
   }
@@ -47,12 +48,14 @@ class View {
     this.$answerInput = $("#player-answer");
     this.$answerButton = $("#submit-answer");
     this.$score = $("#score");
+    this.$scoreBox = $("#score-box");
   }
 
   makeGameBoard(cats) {
     for (const cat of cats) {
       this.makeCatColumn(cat);
     }
+    this.$scoreBox.show();
   }
 
   makeCatColumn(cat) {
@@ -74,11 +77,11 @@ class View {
           "data-points": value,
           "data-cat-id": workingClue.category_id,
         });
+
       $newCatColumm.append($newClueCell);
       clueIndex += 1;
       value += 200;
     });
-
     this.$gameBoard.append($newCatColumm);
   }
 
@@ -129,10 +132,6 @@ class View {
     this.$score.text(`${score}`);
   }
 
-  getAnswerValue() {
-    return $("#player-answer").val();
-  }
-
   disableClue(clueID) {
     const $selectedClue = $(`#${clueID}`);
     $selectedClue.addClass("clicked");
@@ -140,6 +139,11 @@ class View {
 
   toggleBoardNoClick() {
     this.$gameBoard.toggleClass("clicked");
+    this.$startResetBttn.toggleClass("clicked");
+  }
+
+  getAnswerValue() {
+    return $("#player-answer").val();
   }
 
   correctAnswer(value, answer) {
@@ -159,9 +163,10 @@ class Controller {
     this.model = model;
     this.view = view;
     this.view.$startResetBttn.on("click", () => this.initGame());
-    this.view.$gameBoard.on("click", () => this._handleClueClick(event));
-    this.view.$answerButton.on("click", () => this._handleAnswerCheck());
+    this.view.$gameBoard.on("click", () => this.handleClueClick(event));
+    this.view.$answerButton.on("click", () => this.handleAnswerCheck());
   }
+
   async initGame() {
     this.model.score = 0;
     this.view.updateScore(0);
@@ -171,6 +176,7 @@ class Controller {
     this.view.toggleSpinner();
     this.view.makeGameBoard(this.model.categories);
   }
+
   async getData() {
     let categories = [];
     const arrOfPromises = Array.from(
@@ -178,11 +184,13 @@ class Controller {
       (v, i) => i
     ).map(async () => {
       let category = await this.getRandomCat();
+
       while (this.checkClueCount(category)) {
         category = await this.getRandomCat();
       }
       return category;
     });
+
     const results = await Promise.all(arrOfPromises);
     categories = results;
     this.model.addCategories(categories);
@@ -190,7 +198,7 @@ class Controller {
 
   async getRandomCat() {
     const randomID = Math.floor(Math.random() * 28163);
-    let response = await axios.get("https://jservice.io/api/category", {
+    const response = await axios.get("https://jservice.io/api/category", {
       params: {
         id: randomID,
       },
