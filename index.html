@@ -21,7 +21,7 @@
   <body>
     <header>
       <h1>Jeopardy!</h1>
-      <span>Score: <span id="score">0</span></span>
+      <span>Score: $<span id="score">0</span></span>
       <button id="start-reset-bttn">New Game</button>
     </header>
     <div style="display: none" id="clue-window">
@@ -32,8 +32,9 @@
           placeholder="What is...?"
           type="text"
           required
+          style="display: none"
         />
-        <button id="submit-answer">Check Answer</button>
+        <button style="display: none" id="submit-answer">Check Answer</button>
       </div>
     </div>
 

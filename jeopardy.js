@@ -17,7 +17,6 @@ class Model {
   }
 
   updateCurrClue(clickedClue) {
-    console.log(clickedClue.target);
     const clickedCatID = clickedClue.target.getAttribute("data-cat-id");
     const clickedClueID = clickedClue.target.getAttribute("id");
     const clickedCluePoints = Number(
@@ -27,7 +26,6 @@ class Model {
     const currClue = currCat.clues.find((clue) => clue.id == clickedClueID);
     this.currentClue = currClue;
     this.currentClue.value = clickedCluePoints;
-    console.log(this.currentClue);
   }
 
   checkAnswer(userAnswer) {
@@ -50,13 +48,14 @@ class View {
     this.$answerButton = $("#submit-answer");
     this.$score = $("#score");
   }
+
   makeGameBoard(cats) {
     for (const cat of cats) {
-      this._makeCatColumn(cat);
+      this.makeCatColumn(cat);
     }
   }
 
-  _makeCatColumn(cat) {
+  makeCatColumn(cat) {
     const clueArr = cat.clues;
     let clueIndex = 0;
     let value = 200;
@@ -92,16 +91,21 @@ class View {
     this.$clueText.text("");
     const $selectedClue = $(`#${clueID}`);
     $selectedClue.text("");
+
     this.toggleClueWindow();
+
     setTimeout(() => {
       this.toggleClueText();
+      this.toggleInputAndButton();
       this.$clueText.text(clueText);
     }, 1000);
   }
+
   closeClueWindow() {
     this.toggleClueText();
     this.toggleClueWindow();
   }
+
   toggleClueWindow() {
     this.$clueWindow.toggle();
     this.$clueWindow.toggleClass("grow");
@@ -109,6 +113,11 @@ class View {
 
   toggleClueText() {
     this.$clueBox.toggle();
+  }
+
+  toggleInputAndButton() {
+    this.$answerButton.toggle();
+    this.$answerInput.toggle();
   }
 
   clearTable() {
@@ -119,15 +128,28 @@ class View {
     this.$score.text("");
     this.$score.text(`${score}`);
   }
+
   getAnswerValue() {
     return $("#player-answer").val();
   }
+
   disableClue(clueID) {
     const $selectedClue = $(`#${clueID}`);
     $selectedClue.addClass("clicked");
   }
+
   toggleBoardNoClick() {
     this.$gameBoard.toggleClass("clicked");
+  }
+
+  correctAnswer(value, answer) {
+    this.$clueText.text(`Correct! You gain $${value}!`);
+    this.toggleInputAndButton();
+  }
+
+  incorrectAnswer(answer) {
+    this.$clueText.text(`Sorry! The correct answer is "${answer}".`);
+    this.toggleInputAndButton();
   }
 }
 
@@ -136,28 +158,28 @@ class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.view.$startResetBttn.on("click", () => this._initGame());
+    this.view.$startResetBttn.on("click", () => this.initGame());
     this.view.$gameBoard.on("click", () => this._handleClueClick(event));
     this.view.$answerButton.on("click", () => this._handleAnswerCheck());
   }
-  async _initGame() {
+  async initGame() {
     this.model.score = 0;
     this.view.updateScore(0);
     this.view.clearTable();
     this.view.toggleSpinner();
-    await this._getData();
+    await this.getData();
     this.view.toggleSpinner();
     this.view.makeGameBoard(this.model.categories);
   }
-  async _getData() {
+  async getData() {
     let categories = [];
     const arrOfPromises = Array.from(
       { length: this.model.numOfCategories },
       (v, i) => i
     ).map(async () => {
-      let category = await this._getRandomCat();
-      while (this._checkClueCount(category)) {
-        category = await this._getRandomCat();
+      let category = await this.getRandomCat();
+      while (this.checkClueCount(category)) {
+        category = await this.getRandomCat();
       }
       return category;
     });
@@ -166,7 +188,7 @@ class Controller {
     this.model.addCategories(categories);
   }
 
-  async _getRandomCat() {
+  async getRandomCat() {
     const randomID = Math.floor(Math.random() * 28163);
     let response = await axios.get("https://jservice.io/api/category", {
       params: {
@@ -176,10 +198,11 @@ class Controller {
     return response.data;
   }
 
-  _checkClueCount(recievedCat) {
+  checkClueCount(recievedCat) {
     return recievedCat.clues_count < 5;
   }
-  _handleClueClick(event) {
+
+  handleClueClick(event) {
     if (event.target.classList.contains("clue")) {
       this.view.disableClue(event.target.id);
       this.view.toggleBoardNoClick();
@@ -190,18 +213,30 @@ class Controller {
       );
     }
   }
-  _handleAnswerCheck() {
-    this.model.checkAnswer(this.view.getAnswerValue())
-      ? this._handleCorrectAnswer()
-      : this._handleIncorrectAnswer();
-    this.view.toggleBoardNoClick();
+
+  handleAnswerCheck() {
+    if (this.view.getAnswerValue() === "") {
+      return;
+    } else {
+      this.model.checkAnswer(this.view.getAnswerValue())
+        ? this.handleCorrectAnswer()
+        : this.handleIncorrectAnswer();
+      this.view.toggleBoardNoClick();
+    }
   }
-  _handleCorrectAnswer() {
+
+  handleCorrectAnswer() {
+    this.view.correctAnswer(
+      this.model.currentClue.value,
+      this.model.currentClue.answer
+    );
     this.model.increaseScore(this.model.currentClue.value);
     this.view.updateScore(this.model.score);
     setTimeout(() => this.view.closeClueWindow(), 3000);
   }
-  _handleIncorrectAnswer() {
+
+  handleIncorrectAnswer() {
+    this.view.incorrectAnswer(this.model.currentClue.answer);
     setTimeout(() => this.view.closeClueWindow(), 3000);
   }
 }
