@@ -27,7 +27,7 @@ class Model {
     const currClue = currCat.clues.find((clue) => clue.id == clickedClueID);
     this.currentClue = currClue;
     this.currentClue.value = clickedCluePoints;
-    console.log(this.currentClue.value);
+    console.log(this.currentClue);
   }
 
   checkAnswer(userAnswer) {
@@ -44,8 +44,9 @@ class View {
     this.$startResetBttn = $("#start-reset-bttn");
     this.$spinContainer = $("#spin-container");
     this.$clueWindow = $("#clue-window");
+    this.$clueBox = $("#clue-box");
     this.$clueText = $("#clue-text");
-    this.$answerInput = $("#answer");
+    this.$answerInput = $("#player-answer");
     this.$answerButton = $("#submit-answer");
     this.$score = $("#score");
   }
@@ -86,33 +87,34 @@ class View {
     this.$spinContainer.toggle();
   }
 
+  initClueWindow(clueText, clueID) {
+    this.$answerInput.val("");
+    this.$clueText.text("");
+    const $selectedClue = $(`#${clueID}`);
+    $selectedClue.text("");
+    this.toggleClueWindow();
+    setTimeout(() => {
+      this.toggleClueText();
+      this.$clueText.text(clueText);
+    }, 1000);
+  }
+  closeClueWindow() {
+    this.toggleClueText();
+    this.toggleClueWindow();
+  }
   toggleClueWindow() {
     this.$clueWindow.toggle();
+    this.$clueWindow.toggleClass("grow");
+  }
+
+  toggleClueText() {
+    this.$clueBox.toggle();
   }
 
   clearTable() {
     this.$gameBoard.empty();
   }
-  initClueWindow(clueText, clueId) {
-    const $answerInput = $("<input>").prop("required", true).attr({
-      id: "player-answer",
-      class: "answer-input",
-      placeholder: "What is...",
-      type: "text",
-    });
-    const $submitAnswerBttn = $("<button>")
-      .attr({
-        id: "submit-answer",
-        class: "submit-answer-bttn",
-      })
-      .text("Check answer!");
-    const $selectedClue = $(`#${clueId}`);
-    $selectedClue.addClass("grow");
-    setTimeout(() => {
-      $selectedClue.text(clueText);
-      $selectedClue.append($answerInput, $submitAnswerBttn);
-    }, 1000);
-  }
+
   updateScore(score) {
     this.$score.text("");
     this.$score.text(`${score}`);
@@ -120,10 +122,17 @@ class View {
   getAnswerValue() {
     return $("#player-answer").val();
   }
+  disableClue(clueID) {
+    const $selectedClue = $(`#${clueID}`);
+    $selectedClue.addClass("clicked");
+  }
+  toggleBoardNoClick() {
+    this.$gameBoard.toggleClass("clicked");
+  }
 }
 
-//CONTROL
-class Control {
+//CONTROLLER
+class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
@@ -132,6 +141,8 @@ class Control {
     this.view.$answerButton.on("click", () => this._handleAnswerCheck());
   }
   async _initGame() {
+    this.model.score = 0;
+    this.view.updateScore(0);
     this.view.clearTable();
     this.view.toggleSpinner();
     await this._getData();
@@ -170,29 +181,29 @@ class Control {
   }
   _handleClueClick(event) {
     if (event.target.classList.contains("clue")) {
+      this.view.disableClue(event.target.id);
+      this.view.toggleBoardNoClick();
       this.model.updateCurrClue(event);
       this.view.initClueWindow(
         this.model.currentClue.question,
         this.model.currentClue.id
       );
-      $("#submit-answer").on("click", () => this._handleAnswerCheck());
     }
   }
   _handleAnswerCheck() {
-    this.model.checkAnswer(this.view.getAnswerValue)
+    this.model.checkAnswer(this.view.getAnswerValue())
       ? this._handleCorrectAnswer()
       : this._handleIncorrectAnswer();
+    this.view.toggleBoardNoClick();
   }
   _handleCorrectAnswer() {
-    console.log(this.model.currentClue.value);
-    console.log(this.model.score);
     this.model.increaseScore(this.model.currentClue.value);
     this.view.updateScore(this.model.score);
-    console.log(this.model.score);
+    setTimeout(() => this.view.closeClueWindow(), 3000);
   }
   _handleIncorrectAnswer() {
-    console.log(this.model.currentClue.answer);
+    setTimeout(() => this.view.closeClueWindow(), 3000);
   }
 }
 
-new Control(new Model(), new View());
+new Controller(new Model(), new View());

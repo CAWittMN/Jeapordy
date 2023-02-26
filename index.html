@@ -21,22 +21,25 @@
   <body>
     <header>
       <h1>Jeopardy!</h1>
-      <span>Score: <span id="score"></span>0</span>
+      <span>Score: <span id="score">0</span></span>
       <button id="start-reset-bttn">New Game</button>
     </header>
-    <div id="clue-window" style="display: none">
-      <h1 id="clue-text"></h1>
-      <span class="answer-text">What is </span
-      ><input id="answer" type="text" required /><span class="answer-text">
-        ?</span
-      >
-      <button id="submit-answer">Check Answer</button>
+    <div style="display: none" id="clue-window">
+      <div class="clue-box" id="clue-box" style="display: none">
+        <h1 id="clue-text"></h1>
+        <input
+          id="player-answer"
+          placeholder="What is...?"
+          type="text"
+          required
+        />
+        <button id="submit-answer">Check Answer</button>
+      </div>
     </div>
 
     <div id="spin-container" style="display: none">
       <i class="fa fa-spin fa-spinner"></i>
     </div>
-
     <div id="game-board" class="game-board"></div>
 
     <script src="https://unpkg.com/jquery"></script>
