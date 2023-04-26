@@ -36,7 +36,6 @@ class Model {
   }
 }
 
-//VIEW
 class View {
   constructor() {
     this.$gameBoard = $("#game-board");
@@ -147,7 +146,7 @@ class View {
   }
 
   correctAnswer(value, answer) {
-    this.$clueText.text(`Correct! You gain $${value}!`);
+    this.$clueText.text(`"${answer}" is correct! You gain $${value}!`);
     this.toggleInputAndButton();
   }
 
